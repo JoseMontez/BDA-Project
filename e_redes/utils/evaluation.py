@@ -37,12 +37,12 @@ def evaluate_model(
     rmse = evaluator.setMetricName("rmse").evaluate(predictions)
     mae  = evaluator.setMetricName("mae").evaluate(predictions)
     r2   = evaluator.setMetricName("r2").evaluate(predictions)
+    
     mape = predictions.withColumn(
         "absolute_percentage_error",
-        F.when(F.col("total_active_energy_kwh") == 0, 0)
+        F.when(F.col("total_active_energy_kwh") == 0, 1)
         .otherwise(F.abs(F.col("total_active_energy_kwh") - F.col("prediction")) / F.col("total_active_energy_kwh"))
     ).select(F.mean("absolute_percentage_error") * 100).collect()[0][0]
-
     print(f"RMSE: {rmse:,.2f}")
     print(f"MAE:  {mae:,.2f}")
     print(f"R2:   {r2:.4f}")
